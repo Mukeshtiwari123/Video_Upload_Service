@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload</title>
+    <!-- Include Tailwind CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen"> <!-- Set background and center content -->
+    <div class="bg-white shadow-md rounded-lg p-6 max-w-md w-full"> <!-- Card-style container -->
+        <h1 class="text-2xl font-bold mb-4 text-center">Upload a Video</h1> <!-- Title with styling -->
+        <form id="upload-form" action="/videos/uploads" method="POST" enctype="multipart/form-data">
+            <input type="file" name="video" accept="video/*" required class="border border-gray-300 p-2 rounded w-full mb-4" /> <!-- File input styled -->
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Upload</button> <!-- Submit button styled -->
+        </form>
+        <div id="message" class="mt-4 text-center"></div> <!-- Div to display messages with margin on top -->
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('upload-form').onsubmit = function(e) {
+            e.preventDefault(); // Prevent default form submission
+            const formData = new FormData(this); // Create FormData object from the form
+
+            // Send POST request to upload video
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Parse JSON if response is OK
+                } else {
+                    throw new Error('Upload failed'); // Throw error for failed response
+                }
+            })
+            .then(data => {
+                // Display success message with video URL
+                document.getElementById('message').innerHTML = `<p class="text-green-600">Upload successful! Video URL: <a href="${data.videoUrl}" target="_blank" class="text-blue-500 underline">${data.videoUrl}</a></p>`;
+            })
+            .catch((error) => {
+                // Display error message
+                document.getElementById('message').innerHTML = `<p class="text-red-500">${error.message}</p>`;
+            });
+        };
+    </script>
+</body>
+</html>
